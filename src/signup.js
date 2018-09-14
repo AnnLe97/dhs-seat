@@ -4,6 +4,8 @@ import '@blueprintjs/core/lib/css/blueprint.css'
 import '@blueprintjs/icons/lib/css/blueprint-icons.css'
 import { InputGroup, Button, Intent, Tooltip } from '@blueprintjs/core'
 import NavLink from 'react-router-dom/NavLink';
+import { withCookies, Cookies } from 'react-cookie'
+import { Redirect } from 'react-router'
 // import { userLogin, userSignup } from './rematch/models'
 
 class UserSignup extends React.Component {
@@ -59,6 +61,7 @@ class UserSignup extends React.Component {
     )
 
     return (
+      this.props.cookies.get('loginstate') != 'undefined' ? <Redirect to="/room"/> : 
       <div>
         <form>
           <InputGroup
@@ -102,4 +105,4 @@ function mapDispatchToProps (dispatch) {
   return dispatch.userSignup
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserSignup)
+export default withCookies(connect(mapStateToProps, mapDispatchToProps)(UserSignup))

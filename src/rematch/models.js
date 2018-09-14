@@ -183,7 +183,8 @@ export const Room = {
     newRoomCode: '',
     addRoomState: false,
     editRoomState: false,
-    currentRoomView: {}
+    currentRoomView: {},
+    loggedIn: 1
   },
   reducers: {
     handleViewChange (state, payload) {
@@ -216,6 +217,13 @@ export const Room = {
         addRoomState: payload
       }
     },
+    handleLogout (state, payload) {
+      return {
+        ...state,
+        loggedIn: payload
+      }
+    }
+    ,
     editDialog (state, payload) {
       return {
         ...state,
@@ -381,7 +389,6 @@ export const Room = {
     },
     async updateSeat (payload, rootState) {
       console.log(rootState)
-      dispatch.Room.handleLoading(1)
       var seatID = rootState.Room.currentRoomView.seats.filter(v => v.x == payload.x && v.y == payload.y)[0]._id
       client
         .mutate({

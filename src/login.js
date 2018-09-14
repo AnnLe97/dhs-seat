@@ -6,8 +6,14 @@ import { InputGroup, Button, Intent, Tooltip, Callout } from '@blueprintjs/core'
 import logo from './img/Group_102.png'
 import UserSignup from './signup'
 import { BrowserRouter as Router, Route, Link, NavLink } from 'react-router-dom'
+import { withCookies, Cookies } from 'react-cookie'
+import { instanceOf } from 'prop-types'
+import { Redirect } from 'react-router'
 
 class Login extends React.Component {
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired
+  }
   handleLogin (event) {
     event.preventDefault()
     let user = {
@@ -15,6 +21,10 @@ class Login extends React.Component {
       password: this.props.passwordInput
     }
     this.props.loginAuth(user)
+    // if(this.props.failed != 1) {
+    //   this.props.cookies.set('loginstate',1)
+    //   this.props.cookies.set('username',this.props.usernameInput)
+    // }
   }
 
   handleIDChange (event) {
@@ -29,12 +39,18 @@ class Login extends React.Component {
 
   handleLogout (event) {
     event.preventDefault()
+    this.props.cookies.remove('loginstate')
     this.props.logout()
   }
 
   handleLockClick (event) {
     event.preventDefault()
     this.props.showPasswordState === 0 ? this.props.showPassword(1) : this.props.showPassword(0)
+  }
+
+  handleSignup(event) {
+    event.preventDefault()
+    
   }
 
   render () {
@@ -57,7 +73,7 @@ class Login extends React.Component {
 
     console.log(callout)
 
-    if (this.props.loginState === 0) {
+    if (typeof this.props.cookies.get('loginstate')== 'undefined') {
       return (
         <div>
           <img src={logo} id='logo' />
@@ -76,16 +92,12 @@ class Login extends React.Component {
               placeholder='Enter your password...'
             />
             <Button intent='success' className='' onClick={this.handleLogin.bind(this)}>Login</Button>
-            <NavLink to='/signup'><Button intent='primary' className=''>
-            Signup</Button></NavLink>
+            <Button intent='primary' className='' onClick={this.handleSignup.bind(this)}>Signup</Button>
           </form>
           
         </div>)
     } else {
-      return (<div>
-        <p>Logined as {this.props.username}</p>
-        <Button intent='danger' onClick={this.handleLogout.bind(this)}>Logout</Button>
-      </div>)
+      return (this.props.cookies.get('username')=='admin' ? <Redirect to="/room"/> : <Redirect to="/user"/>)
     }
   }
 }
@@ -100,4 +112,4 @@ function mapDispatchToProps (dispatch) {
   return dispatch.userLogin
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login)
+export default withCookies(connect(mapStateToProps, mapDispatchToProps)(Login))
